@@ -48,7 +48,7 @@ case "$NODE_TYPE" in
 
 # Controller node
 "1")  source $SCRIPTPATH/controller/keystone/keystone.sh
-    source $SCRIPTPATH/controller/horizon/horizon.sh
+    source $SCRIPTPATH/controller/horizon/dashboard.sh
     ;;
 
 # storage node - filter by object storage type later

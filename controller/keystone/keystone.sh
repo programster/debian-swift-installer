@@ -76,7 +76,7 @@ sudo apt-get install keystone -y
 
 # Update the connection information in the config file
 SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
-REPLACE="connection=mysql://keystone:$KEYSTONE_DBPASS@$CONTROLLER_PRIVATE_IP/keystone"
+REPLACE="connection=mysql://keystone:$KEYSTONE_DBPASS@$CONTROLLER_PRIVATE_IP/keystonedb"
 FILEPATH="/etc/keystone/keystone.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
