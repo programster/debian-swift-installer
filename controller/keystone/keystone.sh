@@ -26,12 +26,6 @@ source $SCRIPTPATH/../../config.sh
 
 
 # install the database
-clear
-echo "==========================="
-echo "Please copy this password for later use when installing the database:"
-echo "$DATABASE_PASS"
-echo "==========================="
-read -p "press any key when you have copied it in order to continue." -n 1 -r
 
 # Automatically install the mysql server with the root password from our config
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password $DATABASE_PASS'
@@ -67,18 +61,27 @@ sudo apt-get install rabbitmq-server -y
 sudo rabbitmqctl change_password guest $RABBIT_PASS
 
 # Install the identity service
+echo ""
+clear
+echo "*==================*"
+echo "| IMPORTANT NOTICE |"
+echo "*==================*"
+echo "We are about to install the keystone package."
+echo "Enter 'no' to all prompts so that it does NOT try to configure anything"
+echo "If it forces you to enter an 'admin token' put any junk in as this script will replace it."
+read -p "press any key when you have copied it in order to continue." -n 1 -r
 sudo apt-get install keystone -y
 
 # need some screenshots of options here.
 
 # Update the connection information in the config file
-SEARCH="connection = sqlite:////var/lib/keystone/keystone.db"
-REPLACE="connection = mysql://keystone:$KEYSTONE_DBPASS@controller/keystone"
+SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
+REPLACE="connection=mysql://keystone:$KEYSTONE_DBPASS@controller/keystone"
 FILEPATH="/etc/keystone/keystone.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
 # remove the sqlite database directory so that it doesnt get used by mistake
-sudo rm /var/lib/keystone/keystone.db
+sudo rm /var/lib/keystone/keystone.sqlite
 
 
 ## Create a keystone database user:
@@ -92,11 +95,11 @@ mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keys
 sudo su -s /bin/sh -c "keystone-manage db_sync" keystone
 
 
-# add a token to the keystone configuration for setting up our first users.
-SEARCH="#admin_token=ADMIN"
-REPLACE="admin_token=$ADMIN_TOKEN"
+# replace the admin token.
+SEARCH="admin_token = .*"
+REPLACE="admin_token = $ADMIN_TOKEN"
 FILEPATH="/etc/keystone/keystone.conf"
-sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+sudo sed -i "s;$SEARCH;$REPLACE;g" $FILEPATH
 
 
 sudo service keystone restart
