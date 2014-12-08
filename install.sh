@@ -6,9 +6,14 @@ if ! [ -n "$BASH_VERSION" ];then
     exit;
 fi
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT") 
+# Ensure running with root privs
+USER=`whoami`
+if [ "$USER" != "root" ]; then
+        echo "You need to run me with sudo!"
+        exit
+fi
 
+SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # If the user didn't pass what type of node we are installing, then ask them
 if [ "$#" -ne 1 ]; then
