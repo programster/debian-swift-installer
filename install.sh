@@ -12,11 +12,25 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 
 # If the user didn't pass what type of node we are installing, then ask them
 if [ "$#" -ne 1 ]; then
-    echo -n "What kind of node are you installing [ controller | storage ]: "
+    echo "====================================="
+    echo "What kind of node are you installing:" 
+    echo "1. controller" 
+    echo "2. storage"
     read NODE_TYPE
 else
     NODE_TYPE="$1"
 fi
+
+# Ensure the user entered a valid option
+case "$NODE_TYPE" in
+    "1") ;;
+    "2") ;;
+
+    *) 
+        echo "Unrecognized node type"
+        exit
+       ;;
+esac
 
 # Run a script that checks if a config is generated and generates one if it not fully set up,
 # by asking the user a series of questions.
@@ -26,20 +40,17 @@ source $SCRIPTPATH/shared/config.generator.sh
 source $SCRIPTPATH/shared/base.sh
 
 case "$NODE_TYPE" in
-"controller")  source $SCRIPTPATH/controller/keystone/keystone.sh
+
+# Controller node
+"1")  source $SCRIPTPATH/controller/keystone/keystone.sh
     source $SCRIPTPATH/controller/horizon/horizon.sh
     ;;
-"storage")  source $SCRIPTPATH/storage/swift/1.general.sh
+
+# storage node - filter by object storage type later
+"2")  source $SCRIPTPATH/storage/swift/1.general.sh
     source $SCRIPTPATH/storage/swift/2.storage.node.sh
     ;;
+
 *) echo "Unrecognized node type"
    ;;
 esac
-
-
-
-
-
-if [ $INSTALL_OBJECT_STORAGE ]; then
-    source $SCRIPTPATH/09.object.storage/install.sh $NODE_TYPE
-fi
