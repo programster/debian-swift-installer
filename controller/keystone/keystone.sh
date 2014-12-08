@@ -16,11 +16,11 @@ if [ "$USER" != "root" ]; then
 fi
 
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT") 
+KEYSTONE_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 
 # load the config file.
-source $SCRIPTPATH/../../config.sh
+source $KEYSTONE_SCRIPTPATH/../../config.sh
 
 #########################################################################
 
@@ -28,8 +28,8 @@ source $SCRIPTPATH/../../config.sh
 # install the database
 
 # Automatically install the mysql server with the root password from our config
-sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password $DATABASE_PASS'
-sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password $DATABASE_PASS'
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $DATABASE_PASS"
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DATABASE_PASS"
 sudo apt-get install mysql-server -y
 
 # install the python extension.
