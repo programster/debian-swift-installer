@@ -76,7 +76,7 @@ sudo apt-get install keystone -y
 
 # Update the connection information in the config file
 SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
-REPLACE="connection=mysql://keystone:$KEYSTONE_DBPASS@controller/keystone"
+REPLACE="connection=mysql://keystone:$KEYSTONE_DBPASS@$CONTROLLER_PRIVATE_IP/keystone"
 FILEPATH="/etc/keystone/keystone.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
@@ -85,9 +85,9 @@ sudo rm /var/lib/keystone/keystone.sqlite
 
 
 ## Create a keystone database user:
-mysql -u root -p"$DATABASE_PASS" -e "CREATE DATABASE keystone";
-mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '$KEYSTONE_DBPASS'";
-mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '$KEYSTONE_DBPASS'";
+mysql -u root -p"$DATABASE_PASS" -e "CREATE DATABASE keystonedb";
+mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON keystonedb.* TO 'keystone'@'localhost' IDENTIFIED BY '$KEYSTONE_DBPASS'";
+mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON keystonedb.* TO 'keystone'@'%' IDENTIFIED BY '$KEYSTONE_DBPASS'";
 
 
 # create the tables for the identity service
@@ -125,10 +125,10 @@ echo "defining tenants."
 
 export OS_SERVICE_TOKEN=$ADMIN_TOKEN
 export OS_SERVICE_ENDPOINT=http://$CONTROLLER_HOSTNAME:35357/v2.0
-
+export OS_AUTH_URL=http://$CONTROLLER_HOSTNAME:35357/v2.0
 
 # Create the admin user, role, and tenant
-keystone user-create --name=admin --pass="$ADMIN_PASS" --email="$ADMIN_EMAIL" 
+keystone  user-create --name=admin --pass="$ADMIN_PASS" --email="$ADMIN_EMAIL" 
 keystone role-create --name=admin 
 keystone tenant-create --name=admin --description="Admin Tenant"
 
