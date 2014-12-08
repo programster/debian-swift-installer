@@ -6,9 +6,7 @@ if ! [ -n "$BASH_VERSION" ];then
     exit;
 fi
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
-
+GENERATOR_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 function confirm()
 {
@@ -29,11 +27,12 @@ echo "*==================*"
 echo "| Config Generator |"
 echo "*==================*"
 
-if [ ! -f $SCRIPTPATH/../config.sh ]; then
+if [ ! -f $GENERATOR_SCRIPTPATH/../config.sh ]; then
     echo "Config file not found, generating a new one."
 else
     # source the config to load any vars that are already set.
-    source $SCRIPTPATH/../config.sh
+    source $GENERATOR_SCRIPTPATH/../config.sh
+    echo "sourcing $GENERATOR_SCRIPTPATH/../config.sh"
 fi 
 
 
@@ -42,18 +41,21 @@ if [ -z "$CONTROLLER_HOSTNAME" ]; then
     echo ""
     echo "Please enter the hostname for accessing the control server."
     echo "This should not be publicly available and can just be the private IP of the controller"
-    read CONTROLLER_HOSTNAME
-    echo "CONTROLLER_HOSTNAME=$CONTROLLER_HOSTNAME" >> $SCRIPTPATH/../config.sh
+    read -e -i "controller.mydomain.com" CONTROLLER_HOSTNAME
+    echo "CONTROLLER_HOSTNAME=$CONTROLLER_HOSTNAME" >> $GENERATOR_SCRIPTPATH/../config.sh
 fi
 
 
 # Define the private IP of the controller
 if [ -z "$CONTROLLER_PRIVATE_IP" ]; then
     echo ""
+    echo "This hosts IPs (for reference)"
+    hostname -I | xargs | tr [:space:] '\n'
+    echo ""
     echo "Please enter the private IP of the controller server."
     echo "This is the IP of the server on the internal (non public) LAN"
     read CONTROLLER_PRIVATE_IP
-    echo "CONTROLLER_PRIVATE_IP=$CONTROLLER_PRIVATE_IP" >> $SCRIPTPATH/../config.sh
+    echo "CONTROLLER_PRIVATE_IP=$CONTROLLER_PRIVATE_IP" >> $GENERATOR_SCRIPTPATH/../config.sh
 fi
 
 
@@ -62,7 +64,7 @@ if [ -z "$ADMIN_EMAIL" ]; then
     echo ""
     echo "Please enter the admin's email address: "
     read ADMIN_EMAIL
-    echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> $SCRIPTPATH/../config.sh
+    echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> $GENERATOR_SCRIPTPATH/../config.sh
 fi
 
 
@@ -83,7 +85,7 @@ do
     if [ -z "$VALUE" ]; then
         echo "Creating a randomly generated password for: $VAR_NAME"
         NEW_PASS=`openssl rand -hex 16`
-        echo "`echo $VAR_NAME`=`echo $NEW_PASS`" >> $SCRIPTPATH/../config.sh
+        echo "`echo $VAR_NAME`=`echo $NEW_PASS`" >> $GENERATOR_SCRIPTPATH/../config.sh
     fi
 done
 
