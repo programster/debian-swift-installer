@@ -24,6 +24,10 @@ function confirm()
     esac
 }
 
+echo ""
+echo "*==================*"
+echo "| Config Generator |"
+echo "*==================*"
 
 if [ ! -f $SCRIPTPATH/../config.sh ]; then
     echo "Config file not found, generating a new one."
@@ -35,6 +39,7 @@ fi
 
 # Define the hostname of the controller.
 if [ -z "$CONTROLLER_HOSTNAME" ]; then
+    echo ""
     echo "Please enter the hostname for accessing the control server."
     echo "This should not be publicly available and can just be the private IP of the controller"
     read CONTROLLER_HOSTNAME
@@ -44,6 +49,7 @@ fi
 
 # Define the private IP of the controller
 if [ -z "$CONTROLLER_PRIVATE_IP" ]; then
+    echo ""
     echo "Please enter the private IP of the controller server."
     echo "This is the IP of the server on the internal (non public) LAN"
     read CONTROLLER_PRIVATE_IP
@@ -53,6 +59,7 @@ fi
 
 # Define the email address of the admin
 if [ -z "$ADMIN_EMAIL" ]; then
+    echo ""
     echo "Please enter the admin's email address: "
     read ADMIN_EMAIL
     echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> $SCRIPTPATH/../config.sh
@@ -79,5 +86,4 @@ do
         echo "`echo $VAR_NAME`=`echo $NEW_PASS`" >> $SCRIPTPATH/../config.sh
     fi
 done
-
 
