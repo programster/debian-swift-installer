@@ -45,7 +45,7 @@ sudo debconf-set-selections <<< "neutron-server  neutron/register-endpoint      
 sudo debconf-set-selections <<< "neutron-server  neutron/keystone-ip            string      $CONTROLLER_PRIVATE_IP"
 sudo debconf-set-selections <<< "neutron-server  neutron/keystone-auth-token    password    $ADMIN_TOKEN"
 sudo debconf-set-selections <<< "neutron-server  neutron/endpoint-ip            string      $CONTROLLER_PRIVATE_IP"
-sudo debconf-set-selections <<< "neutron-server  neutron/region-name            string      regionOne"
+sudo debconf-set-selections <<< "neutron-server  neutron/region-name            string      $REGION_NAME"
 sudo apt-get install neutron-server -y
 
 # create the neutron user/endpoint
@@ -68,6 +68,12 @@ keystone endpoint-create \
 
 
 # Finally get round to installing nova
+sudo debconf-set-selections <<< "nova-common  nova/active-api                  multiselect  metadata"
+sudo debconf-set-selections <<< "nova-common  nova/my-ip                       string       $CONTROLLER_PRIVATE_IP"
+sudo debconf-set-selections <<< "nova-common  nova/neutron_url                 string       http://$CONTROLLER_PRIVATE_IP:9696"
+sudo debconf-set-selections <<< "nova-common  nova/neutron_admin_tenant_name   string       $SERVICE_TENANT_NAME"
+sudo debconf-set-selections <<< "nova-common  nova/neutron_admin_username      string       $NEUTRON_USER"
+sudo debconf-set-selections <<< "nova-common  nova/neutron_admin_password      password     $NEUTRON_PASS"
 sudo debconf-set-selections <<< "nova-common  nova/auth-host                   string       $CONTROLLER_PRIVATE_IP"
 sudo debconf-set-selections <<< "nova-common  nova/admin-tenant-name           string       $SERVICE_TENANT_NAME"
 sudo debconf-set-selections <<< "nova-common  nova/admin-user                  string       $NOVA_USER"
@@ -78,8 +84,15 @@ sudo debconf-set-selections <<< "nova-common  nova/rabbit_userid               s
 sudo debconf-set-selections <<< "nova-common  nova/rabbit_password             password     $RABBIT_PASS"
 sudo apt-get install nova-common -y
 
+
+sudo debconf-set-selections <<< "packagename  nova/register-endpoint    boolean     false"
+sudo debconf-set-selections <<< "packagename  nova/keystone-ip          string      $CONTROLLER_PRIVATE_IP"
+sudo debconf-set-selections <<< "packagename  nova/keystone-auth-token  password    $ADMIN_TOKEN"
+sudo debconf-set-selections <<< "packagename  nova/endpoint-ip          string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "packagename  nova/region-name          string      $REGION_NAME"
+sudo apt-get install nova-api -y
+
 sudo apt-get install \
-nova-api \
 nova-cert \
 nova-conductor \
 nova-consoleauth \

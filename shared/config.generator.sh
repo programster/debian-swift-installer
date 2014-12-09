@@ -98,6 +98,8 @@ done
 # define constants, feel free to change them
 echo 'RABBIT_USER="guest"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'SERVICE_TENANT_NAME="service"'    >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'REGION_NAME="regionOne"'          >> $GENERATOR_SCRIPTPATH/../config.sh
+
 echo 'GLANCE_USER="glance"'             >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NOVA_USER="nova"'                 >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_USER="keystone"'         >> $GENERATOR_SCRIPTPATH/../config.sh
@@ -112,7 +114,6 @@ echo 'NOVA_DB_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_DB_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'GLANCE_DB_USER="keystone"'        >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NEUTRON_DB_USER="keystone"'       >> $GENERATOR_SCRIPTPATH/../config.sh
-
 
 
 

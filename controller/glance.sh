@@ -35,7 +35,7 @@ sudo debconf-set-selections <<< "glance-api glance/register-endpoint    boolean 
 sudo debconf-set-selections <<< "glance-api glance/keystone-ip          string      $CONTROLLER_PRIVATE_IP"
 sudo debconf-set-selections <<< "glance-api glance/keystone-auth-token  password    $ADMIN_TOKEN"
 sudo debconf-set-selections <<< "glance-api glance/endpoint-ip          password    $CONTROLLER_PRIVATE_IP"
-sudo debconf-set-selections <<< "glance-api glance/region-name          string      regionOne"
+sudo debconf-set-selections <<< "glance-api glance/region-name          string      $REGION_NAME"
 sudo apt-get install glance-api -y
 
 
