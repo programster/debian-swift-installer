@@ -64,7 +64,6 @@ sudo debconf-set-selections <<< "keystone  keystone/create-admin-tenant     bool
 sudo debconf-set-selections <<< "keystone  keystone/register-endpoint       boolean     false"
 sudo apt-get install keystone -y
 
-# need some screenshots of options here.
 
 # Update the connection information in the config file
 SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
