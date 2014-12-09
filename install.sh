@@ -48,10 +48,13 @@ case "$NODE_TYPE" in
 
 # Controller node
 "1")  source $SCRIPTPATH/controller/keystone.sh
-    source $SCRIPTPATH/controller/horizon.sh
+    
     # For the dashboard to work, one must have the compute and image services configured.
     source $SCRIPTPATH/controller/glance.sh
     source $SCRIPTPATH/controller/nova.sh
+    
+    source $SCRIPTPATH/controller/horizon.sh
+    source $SCRIPTPATH/controller/hacks.sh
     ;;
 
 # storage node - filter by object storage type later
