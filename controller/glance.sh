@@ -20,6 +20,25 @@ fi
 GLANCE_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $GLANCE_SCRIPTPATH/../config.sh
 
+sudo debconf-set-selections <<< "python-glanceclient  glance/paste-flavor        select     keystone"
+sudo debconf-set-selections <<< "python-glanceclient  glance/auth-host           string     $CONTROLLER_PRIVATE_IP"
+sudo debconf-set-selections <<< "python-glanceclient  glance/admin-tenant-name   string     $SERVICE_TENANT_NAME"
+sudo debconf-set-selections <<< "python-glanceclient  glance/admin-user          string     $GLANCE_USER"
+sudo debconf-set-selections <<< "python-glanceclient  glance/admin-password      password   $ADMIN_PASS"
+sudo debconf-set-selections <<< "python-glanceclient  glance/configure_db        boolean    false"
+sudo debconf-set-selections <<< "python-glanceclient  glance/rabbit_host         string     localhost"
+sudo debconf-set-selections <<< "python-glanceclient  glance/rabbit_userid       string     $RABBIT_USER"
+sudo debconf-set-selections <<< "python-glanceclient  glance/rabbit_password     password   $RABBIT_PASS"
+sudo apt-get install glance-common -y
+
+sudo debconf-set-selections <<< "glance-api glance/register-endpoint    boolean     false"
+sudo debconf-set-selections <<< "glance-api glance/keystone-ip          string      $CONTROLLER_PRIVATE_IP"
+sudo debconf-set-selections <<< "glance-api glance/keystone-auth-token  password    $ADMIN_TOKEN"
+sudo debconf-set-selections <<< "glance-api glance/endpoint-ip          password    $CONTROLLER_PRIVATE_IP"
+sudo debconf-set-selections <<< "glance-api glance/region-name          string      regionOne"
+sudo apt-get install glance-api -y
+
+
 sudo apt-get install glance python-glanceclient -y
 
 SEARCH="#connection = <None>"
@@ -54,16 +73,20 @@ keystone user-create --name=glance --pass=$GLANCE_PASS --email=glance@example.co
 keystone user-role-add --user=glance --tenant=service --role=admin
 
 # Configure the Image Service to use the Identity Service for authentication.
-SEARCH="auth_host = 127.0.0.1"
-REPLACE="auth_host = $CONTROLLER_HOSTNAME"
-FILEPATH="/etc/glance/glance-api.conf"
-sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+# This is no longer necessary whilst the package does this automatically
+# see debconf-set-selections above
+if false; then
+    SEARCH="auth_host = 127.0.0.1"
+    REPLACE="auth_host = $CONTROLLER_HOSTNAME"
+    FILEPATH="/etc/glance/glance-api.conf"
+    sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
-FILEPATH="/etc/glance/glance-registry.conf"
-sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+    FILEPATH="/etc/glance/glance-registry.conf"
+    sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+fi
 
 
-SEARCH="admin_tenant_name = %SERVICE_TENANT_NAME%"
+SEARCH="admin_tenant_name = $SERVICE_TENANT_NAME"
 REPLACE="admin_tenant_name = service"
 FILEPATH="/etc/glance/glance-api.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
@@ -99,16 +122,21 @@ FILEPATH="/etc/glance/glance-registry.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
 # add flavor to paste_deploy section
-SEARCH="#flavor="
-REPLACE="flavor = keystone"
-FILEPATH="/etc/glance/glance-api.conf"
-sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+# This is no longer necessary whilst the package does this automatically
+# see debconf-set-selections above
+if false; then
+    SEARCH="#flavor="
+    REPLACE="flavor = keystone"
+    FILEPATH="/etc/glance/glance-api.conf"
+    sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+fi
 
 FILEPATH="/etc/glance/glance-registry.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
 #register the image service with identity so that other services can locate it
-keystone service-create --name=glance --type=image --description="OpenStack Image Service"
+keystone service-create --name=$GLANCE_USER --type=image --description="OpenStack Image Service"
+
 keystone endpoint-create \
 --service-id=$(keystone service-list | awk '/ image / {print $2}') \
 --publicurl=http://$CONTROLLER_HOSTNAME:9292 \
