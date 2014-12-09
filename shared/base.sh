@@ -18,6 +18,7 @@ source $SCRIPTPATH/../config.sh
 
 #########################################################################
 
+sudo apt-get update && sudo apt-get dist-upgrade -y
 
 # setup NTP
 sudo apt-get install ntp -y
@@ -27,12 +28,6 @@ sudo service ntp restart
 # Install packages
 ## debian wheezy only
 sudo apt-get install python-argparse -y
-
-# Install the Debian Wheezy backport repository Icehouse:
-echo "deb http://archive.gplhost.com/debian icehouse-backports main" | sudo tee -a /etc/apt/sources.list
-echo "deb http://archive.gplhost.com/debian icehouse main" | sudo tee -a /etc/apt/sources.list
-sudo apt-get update && sudo apt-get install gplhost-archive-keyring --force-yes -y
-sudo apt-get update && sudo apt-get dist-upgrade -y
 
 
 #!/bin/bash
