@@ -40,7 +40,7 @@ FILEPATH="/etc/nova/nova.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
 # append to the nova config file
-sudo echo "rpc_backend = rabbit
+echo "rpc_backend = rabbit
 rabbit_host = controller
 rabbit_password = $RABBIT_PASS
 my_ip = $CONTROLLER_PRIVATE_IP
@@ -58,7 +58,7 @@ admin_user = nova
 admin_password = $NOVA_PASS
 
 [database]
-connection = mysql://nova:$NOVA_DBPASS@controller/nova" >> /etc/nova/nova.conf
+connection = mysql://nova:$NOVA_DBPASS@$CONTROLLER_HOSTNAME/nova" | sudo tee -a /etc/nova/nova.conf
 
 rm /var/lib/nova/nova.sqlite
 
@@ -77,12 +77,10 @@ export OS_USERNAME="admin"
 export OS_PASSWORD="$ADMIN_PASS"
 export OS_TENANT_NAME="admin"
 export OS_AUTH_URL="http://$CONTROLLER_HOSTNAME:35357/v2.0"
-keystone user-create --name=nova --pass=NOVA_PASS --email=nova@example.com
-keystone user-role-add --user=nova --tenant=service --role=admin
 
-
-# register compute with the identity service
-keystone service-create --name=nova --type=compute --description="OpenStack Compute"
+keystone user-create --name=$NOVA_USER --pass=NOVA_PASS --email=$ADMIN_EMAIL
+keystone user-role-add --user=$NOVA_USER --tenant=$SERVICE_TENANT_NAME --role=admin
+keystone service-create --name=$NOVA_USER --type=compute --description="OpenStack Compute"
 
 keystone endpoint-create \
 --service-id=$(keystone service-list | awk '/ compute / {print $2}') \
@@ -99,8 +97,9 @@ service nova-scheduler restart
 service nova-conductor restart
 service nova-novncproxy restart
 
-# verify installation
-nova image-list
-
-echo "if you dont see a table above, something went wrong."
-echo "compute installation finished."
+# verify installation when debugging
+if false; then
+    nova image-list
+    echo "if you dont see a table above, something went wrong."
+    echo "compute installation finished."
+fi
