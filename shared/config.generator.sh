@@ -76,6 +76,8 @@ PASSWORDS+=("KEYSTONE_DBPASS")
 PASSWORDS+=("ADMIN_TOKEN")
 PASSWORDS+=("ADMIN_PASS")
 PASSWORDS+=("DASH_DBPASS")
+PASSWORDS+=("GLANCE_DBPASS")
+PASSWORDS+=("NOVA_DBPASS")
 passwords+=("SWIFT_HASH_PATH_SUFFIX")
 
 for VAR_NAME in "${PASSWORDS[@]}"
@@ -88,4 +90,10 @@ do
         echo "`echo $VAR_NAME`=`echo $NEW_PASS`" >> $GENERATOR_SCRIPTPATH/../config.sh
     fi
 done
+
+# define constants, feel free to change them
+echo 'RABBIT_USER="guest"'           >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'SERVICE_TENANT_NAME="service"' >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'GLANCE_USER="glance"'          >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'NOVA_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 
