@@ -51,7 +51,7 @@ case "$NODE_TYPE" in
     source $SCRIPTPATH/controller/horizon.sh
     # For the dashboard to work, one must have the compute and image services configured.
     source $SCRIPTPATH/controller/glance.sh
-    source $SCRIPTPATH/controller/dashboard.sh
+    source $SCRIPTPATH/controller/nova.sh
     ;;
 
 # storage node - filter by object storage type later
