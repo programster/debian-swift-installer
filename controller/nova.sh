@@ -85,11 +85,11 @@ sudo debconf-set-selections <<< "nova-common  nova/rabbit_password             p
 sudo apt-get install nova-common -y
 
 
-sudo debconf-set-selections <<< "packagename  nova/register-endpoint    boolean     false"
-sudo debconf-set-selections <<< "packagename  nova/keystone-ip          string      $CONTROLLER_PRIVATE_IP"
-sudo debconf-set-selections <<< "packagename  nova/keystone-auth-token  password    $ADMIN_TOKEN"
-sudo debconf-set-selections <<< "packagename  nova/endpoint-ip          string      $CONTROLLER_HOSTNAME"
-sudo debconf-set-selections <<< "packagename  nova/region-name          string      $REGION_NAME"
+sudo debconf-set-selections <<< "nova-api  nova/register-endpoint       boolean     false"
+sudo debconf-set-selections <<< "nova-api  nova/keystone-ip             string      $CONTROLLER_PRIVATE_IP"
+sudo debconf-set-selections <<< "nova-api  nova/keystone-auth-token     password    $ADMIN_TOKEN"
+sudo debconf-set-selections <<< "nova-api  nova/endpoint-ip             string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "nova-api  nova/region-name             string      $REGION_NAME"
 sudo apt-get install nova-api -y
 
 sudo apt-get install \
