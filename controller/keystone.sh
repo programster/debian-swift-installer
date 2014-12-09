@@ -60,15 +60,12 @@ sudo rabbitmqctl change_password $RABBIT_USER $RABBIT_PASS
 # Install the identity service
 sudo debconf-set-selections <<< "keystone  keystone/configure_db            boolean     false"
 sudo debconf-set-selections <<< "keystone  keystone/auth-token              password    $ADMIN_TOKEN"
-sudo debconf-set-selections <<< "keystone  keystone/create-admin-tenant     boolean     false"
-sudo debconf-set-selections <<< "keystone  keystone/register-endpoint       boolean     false"
 sudo apt-get install keystone -y
 
-# need some screenshots of options here.
 
 # Update the connection information in the config file
-SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
-REPLACE="connection=mysql://$KEYSTONE_DB_USER:$KEYSTONE_DBPASS@$CONTROLLER_HOSTNAME/$KEYSTONE_DB_NAME"
+SEARCH="connection = sqlite:////var/lib/keystone/keystone.sqlite"
+REPLACE="connection = mysql://$KEYSTONE_DB_USER:$KEYSTONE_DBPASS@$CONTROLLER_HOSTNAME/$KEYSTONE_DB_NAME"
 FILEPATH="/etc/keystone/keystone.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
