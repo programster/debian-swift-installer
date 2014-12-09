@@ -1,4 +1,24 @@
+#!/bin/bash
+# glance is openstacks image service
 # http://docs.openstack.org/icehouse/install-guide/install/apt/content/glance-install.html
+
+if ! [ -n "$BASH_VERSION" ];then
+    echo "this is not bash, calling self with bash....";
+    SCRIPT=$(readlink -f "$0")
+    /bin/bash $SCRIPT
+    exit;
+fi
+
+USER=`whoami`
+
+if [ "$USER" != "root" ]; then
+    echo "You need to run me with sudo!"
+    exit
+fi
+
+# load the config file.
+GLANCE_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $GLANCE_SCRIPTPATH/../config.sh
 
 sudo apt-get install glance python-glanceclient -y
 

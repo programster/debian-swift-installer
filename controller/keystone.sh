@@ -15,12 +15,9 @@ if [ "$USER" != "root" ]; then
     exit
 fi
 
-
-KEYSTONE_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-
 # load the config file.
-source $KEYSTONE_SCRIPTPATH/../../config.sh
+KEYSTONE_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $KEYSTONE_SCRIPTPATH/../config.sh
 
 #########################################################################
 

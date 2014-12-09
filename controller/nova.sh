@@ -1,3 +1,24 @@
+#!/bin/bash
+# nova is openstacks compute service
+if ! [ -n "$BASH_VERSION" ];then
+    echo "this is not bash, calling self with bash....";
+    SCRIPT=$(readlink -f "$0")
+    /bin/bash $SCRIPT
+    exit;
+fi
+
+USER=`whoami`
+
+if [ "$USER" != "root" ]; then
+    echo "You need to run me with sudo!"
+    exit
+fi
+
+# load the config file.
+NOVA_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $NOVA_SCRIPTPATH/../config.sh
+
+
 clear
 echo "installing compute capability (not the node)"
 sleep 1

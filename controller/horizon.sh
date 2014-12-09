@@ -16,11 +16,9 @@ if [ "$USER" != "root" ]; then
     exit
 fi
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT") 
-
 # load the config file.
-source $SCRIPTPATH/../../config.sh
+HORIZON_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $HORIZON_SCRIPTPATH/../config.sh
 
 #########################################################################
 
