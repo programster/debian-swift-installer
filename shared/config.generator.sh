@@ -80,6 +80,8 @@ PASSWORDS+=("GLANCE_PASS")
 PASSWORDS+=("GLANCE_DBPASS")
 PASSWORDS+=("NOVA_PASS")
 PASSWORDS+=("NOVA_DBPASS")
+PASSWORDS+=("NEUTRON_PASS")
+PASSWORDS+=("NEUTRON_DBPASS")
 passwords+=("SWIFT_HASH_PATH_SUFFIX")
 
 for VAR_NAME in "${PASSWORDS[@]}"
@@ -99,14 +101,17 @@ echo 'SERVICE_TENANT_NAME="service"'    >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'GLANCE_USER="glance"'             >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NOVA_USER="nova"'                 >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_USER="keystone"'         >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'NEUTRON_USER="neutron"'           >> $GENERATOR_SCRIPTPATH/../config.sh
 
 echo 'NOVA_DB_NAME="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'GLANCE_DB_NAME="glance"'          >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_DB_NAME="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'NEUTRON_DB_NAME="neutron"'        >> $GENERATOR_SCRIPTPATH/../config.sh
 
 echo 'NOVA_DB_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_DB_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
-echo 'GLANCE_DB_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'GLANCE_DB_USER="keystone"'        >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'NEUTRON_DB_USER="keystone"'       >> $GENERATOR_SCRIPTPATH/../config.sh
 
 
 
