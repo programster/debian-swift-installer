@@ -61,6 +61,7 @@ sudo rabbitmqctl change_password $RABBIT_USER $RABBIT_PASS
 sudo debconf-set-selections <<< "keystone  keystone/configure_db            boolean     false"
 sudo debconf-set-selections <<< "keystone  keystone/auth-token              password    $ADMIN_TOKEN"
 sudo apt-get install keystone -y
+sleep 5
 
 
 # Update the connection information in the config file
@@ -80,8 +81,11 @@ mysql -u root -p"$ROOT_DB_PASS" -e "GRANT ALL PRIVILEGES ON $KEYSTONE_DB_NAME.* 
 
 
 # create the tables for the identity service
-#su -s /bin/sh -c "keystone-manage db_sync" keystone
+# without execute permisson the sync fails
+sudo cmod 740 /etc/keystone/keystone.conf
 sudo su -s /bin/sh -c "keystone-manage db_sync" keystone
+sudo apt-get install keystone -y
+sleep 5
 
 
 # replace the admin token.
