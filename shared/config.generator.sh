@@ -96,4 +96,5 @@ echo 'RABBIT_USER="guest"'           >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'SERVICE_TENANT_NAME="service"' >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'GLANCE_USER="glance"'          >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NOVA_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'KEYSTONE_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
 
