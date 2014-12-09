@@ -28,10 +28,6 @@ sudo apt-get install apache2 memcached libapache2-mod-wsgi openstack-dashboard -
 # This theme prevents translations, several menus as well as the network map from rendering correctly:
 sudo apt-get remove --purge openstack-dashboard-ubuntu-theme -y
 
-# Modify the value of CACHES['default']['LOCATION'] in /etc/openstack-dashboard/local_settings.py 
-# to match the ones set in /etc/memcached.conf.
-
-
 
 echo "By default, all IPs can connect to the dashboard.
 Production installations should have some filtering.  
@@ -44,6 +40,14 @@ SEARCH="OPENSTACK_HOST = \"127.0.0.1\""
 REPLACE="OPENSTACK_HOST = \"$CONTROLLER_HOSTNAME\""
 FILEPATH="/etc/openstack-dashboard/local_settings.py"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+
+
+# Allow the dashboard to be accessed from anywhere.
+SEARCH="#ALLOWED_HOSTS =.*"
+REPLACE='ALLOWED_HOSTS = ["*"]'
+FILEPATH="/etc/openstack-dashboard/local_settings.py"
+sudo sed -i "s;$SEARCH;$REPLACE;g" $FILEPATH
+
 
 sudo service apache2 restart
 sudo service memcached restart
