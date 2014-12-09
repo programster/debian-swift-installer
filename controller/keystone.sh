@@ -55,18 +55,13 @@ sudo apt-get install python-software-properties -y
 
 # Install message server
 sudo apt-get install rabbitmq-server -y
-sudo rabbitmqctl change_password guest $RABBIT_PASS
+sudo rabbitmqctl change_password $RABBIT_USER $RABBIT_PASS
 
 # Install the identity service
-echo ""
-clear
-echo "*==================*"
-echo "| IMPORTANT NOTICE |"
-echo "*==================*"
-echo "We are about to install the keystone package."
-echo "Enter 'no' to all prompts so that it does NOT try to configure anything"
-echo "If it forces you to enter an 'admin token' put any junk in as this script will replace it."
-read -p "press any key when you have copied it in order to continue." -n 1 -r
+sudo debconf-set-selections <<< "keystone  keystone/configure_db            boolean     false"
+sudo debconf-set-selections <<< "keystone  keystone/auth-token              password    $ADMIN_TOKEN"
+sudo debconf-set-selections <<< "keystone  keystone/create-admin-tenant     boolean     false"
+sudo debconf-set-selections <<< "keystone  keystone/register-endpoint       boolean     false"
 sudo apt-get install keystone -y
 
 # need some screenshots of options here.
@@ -125,8 +120,8 @@ export OS_SERVICE_ENDPOINT=http://$CONTROLLER_HOSTNAME:35357/v2.0
 export OS_AUTH_URL=http://$CONTROLLER_HOSTNAME:35357/v2.0
 
 # Create the admin user, role, and tenant
-keystone  user-create --name=admin --pass="$ADMIN_PASS" --email="$ADMIN_EMAIL" 
-keystone role-create --name=admin 
+keystone user-create   --name=admin --pass="$ADMIN_PASS" --email="$ADMIN_EMAIL" 
+keystone role-create   --name=admin 
 keystone tenant-create --name=admin --description="Admin Tenant"
 
 # You must now link the admin user, admin role, and admin tenant together using the user-role-add option: 
@@ -151,17 +146,14 @@ keystone user-role-add --user=demo --role=_member_ --tenant=demo
 # OpenStack services also require a username, tenant, and role to access other OpenStack services. 
 # In a basic installation, OpenStack services typically share a single tenant named service. 
 # You will create additional usernames and roles under this tenant as you install and configure each service. 
-keystone tenant-create --name=service --description="Service Tenant"
+keystone tenant-create --name=$SERVICE_TENANT_NAME --description="Service Tenant"
 
 
 ## Setup services and API endpoints
 # Create a service entry for the Identity Service:
-keystone service-create \
---name=keystone \
---type=identity \
---description="Keystone Identity Service"
+keystone service-create --name=$KEYSTONE_USER --type=identity --description="Keystone Identity Service"
 
-#Specify an API endpoint for the Identity Service by using the returned service ID. 
+# Specify an API endpoint for the Identity Service by using the returned service ID. 
 # When you specify an endpoint, you provide URLs for the public API, internal API, and admin API. 
 # In this guide, the controller host name is used. Note that the Identity Service uses a different 
 # port for the admin API.
