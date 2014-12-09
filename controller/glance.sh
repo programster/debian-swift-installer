@@ -42,7 +42,7 @@ sudo apt-get install glance-api -y
 sudo apt-get install glance python-glanceclient -y
 
 SEARCH="#connection = <None>"
-REPLACE="connection = mysql://glance:$GLANCE_DBPASS@controller/glance"
+REPLACE="connection = mysql://$GLANCE_USER:$GLANCE_DBPASS@$CONTROLLER_HOSTNAME/$GLANCE_DB_NAME"
 FILEPATH="/etc/glance/glance-registry.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
@@ -56,9 +56,9 @@ sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
 
 # Create the glance database and user in the mysql db
-mysql -u root -p$DATABASE_PASS -h $CONTROLLER_HOSTNAME -e "CREATE DATABASE glance;"
-mysql -u root -p$DATABASE_PASS -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '$GLANCE_DBPASS';"
-mysql -u root -p$DATABASE_PASS -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '$GLANCE_DBPASS';"
+mysql -u root -p$ROOT_DB_PASS -h $CONTROLLER_HOSTNAME -e "CREATE DATABASE $GLANCE_DB_NAME;"
+mysql -u root -p$ROOT_DB_PASS -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $GLANCE_DB_NAME.* TO '$GLANCE_USER'@'localhost' IDENTIFIED BY '$GLANCE_DBPASS';"
+mysql -u root -p$ROOT_DB_PASS -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $GLANCE_DB_NAME.* TO '$GLANCE_USER'@'%' IDENTIFIED BY '$GLANCE_DBPASS';"
 
 # create the database tables for the image service
 sudo su -s /bin/sh -c "glance-manage db_sync" glance
@@ -69,8 +69,8 @@ export OS_TENANT_NAME="admin"
 export OS_AUTH_URL="http://$CONTROLLER_HOSTNAME:35357/v2.0"
 
 # create the glance keystone user
-keystone user-create --name=glance --pass=$GLANCE_PASS --email=glance@example.com
-keystone user-role-add --user=glance --tenant=service --role=admin
+keystone user-create --name=$GLANCE_USER --pass=$GLANCE_PASS --email=$ADMIN_EMAIL
+keystone user-role-add --user=$GLANCE_USER --tenant=service --role=admin
 
 # Configure the Image Service to use the Identity Service for authentication.
 # This is no longer necessary whilst the package does this automatically

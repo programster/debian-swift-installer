@@ -25,8 +25,8 @@ source $KEYSTONE_SCRIPTPATH/../config.sh
 # install the database
 
 # Automatically install the mysql server with the root password from our config
-sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $DATABASE_PASS"
-sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DATABASE_PASS"
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $ROOT_DB_PASS"
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOT_DB_PASS"
 sudo apt-get install mysql-server -y
 
 # install the python extension.
@@ -68,7 +68,7 @@ sudo apt-get install keystone -y
 
 # Update the connection information in the config file
 SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
-REPLACE="connection=mysql://keystone:$KEYSTONE_DBPASS@$CONTROLLER_PRIVATE_IP/keystonedb"
+REPLACE="connection=mysql://$KEYSTONE_DB_USER:$KEYSTONE_DBPASS@$CONTROLLER_HOSTNAME/$KEYSTONE_DB_NAME"
 FILEPATH="/etc/keystone/keystone.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
@@ -77,9 +77,9 @@ sudo rm /var/lib/keystone/keystone.sqlite
 
 
 ## Create a keystone database user:
-mysql -u root -p"$DATABASE_PASS" -e "CREATE DATABASE keystonedb";
-mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON keystonedb.* TO 'keystone'@'localhost' IDENTIFIED BY '$KEYSTONE_DBPASS'";
-mysql -u root -p"$DATABASE_PASS" -e "GRANT ALL PRIVILEGES ON keystonedb.* TO 'keystone'@'%' IDENTIFIED BY '$KEYSTONE_DBPASS'";
+mysql -u root -p"$ROOT_DB_PASS" -e "CREATE DATABASE $KEYSTONE_DB_NAME";
+mysql -u root -p"$ROOT_DB_PASS" -e "GRANT ALL PRIVILEGES ON $KEYSTONE_DB_NAME.* TO '$KEYSTONE_DB_USER'@'localhost' IDENTIFIED BY '$KEYSTONE_DBPASS'";
+mysql -u root -p"$ROOT_DB_PASS" -e "GRANT ALL PRIVILEGES ON $KEYSTONE_DB_NAME.* TO '$KEYSTONE_DB_USER'@'%' IDENTIFIED BY '$KEYSTONE_DBPASS'";
 
 
 # create the tables for the identity service

@@ -70,13 +70,15 @@ fi
 
 # Check for passwords and if not set, then auto generate one.
 PASSWORDS=()
-PASSWORDS+=("DATABASE_PASS")
+PASSWORDS+=("ROOT_DB_PASS")
 PASSWORDS+=("RABBIT_PASS")
 PASSWORDS+=("KEYSTONE_DBPASS")
 PASSWORDS+=("ADMIN_TOKEN")
 PASSWORDS+=("ADMIN_PASS")
 PASSWORDS+=("DASH_DBPASS")
+PASSWORDS+=("GLANCE_PASS")
 PASSWORDS+=("GLANCE_DBPASS")
+PASSWORDS+=("NOVA_PASS")
 PASSWORDS+=("NOVA_DBPASS")
 passwords+=("SWIFT_HASH_PATH_SUFFIX")
 
@@ -92,9 +94,20 @@ do
 done
 
 # define constants, feel free to change them
-echo 'RABBIT_USER="guest"'           >> $GENERATOR_SCRIPTPATH/../config.sh
-echo 'SERVICE_TENANT_NAME="service"' >> $GENERATOR_SCRIPTPATH/../config.sh
-echo 'GLANCE_USER="glance"'          >> $GENERATOR_SCRIPTPATH/../config.sh
-echo 'NOVA_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
-echo 'KEYSTONE_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'RABBIT_USER="guest"'              >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'SERVICE_TENANT_NAME="service"'    >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'GLANCE_USER="glance"'             >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'NOVA_USER="nova"'                 >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'KEYSTONE_USER="keystone"'         >> $GENERATOR_SCRIPTPATH/../config.sh
+
+echo 'NOVA_DB_NAME="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'GLANCE_DB_NAME="glance"'          >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'KEYSTONE_DB_NAME="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
+
+echo 'NOVA_DB_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'KEYSTONE_DB_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'GLANCE_DB_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
+
+
+
 
