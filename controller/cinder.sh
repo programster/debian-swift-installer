@@ -27,11 +27,32 @@ source $CINDER_SCRIPTPATH/../config.sh
 # This scenario configures OpenStack Block Storage services on the Controller node and assumes 
 # that a second node provides storage through the cinder-volume service.
 
-sudo apt-get install openstack-cinder -y
+sudo debconf-set-selections <<< "packagename  cinder/register-endpoint      boolean     false"
+sudo debconf-set-selections <<< "packagename  cinder/keystone-ip            string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "packagename  cinder/keystone-auth-token    password    $ADMIN_TOKEN"
+sudo debconf-set-selections <<< "packagename  cinder/endpoint-ip            string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "packagename  cinder/region-name            string      $REGION_NAME"
+sudo apt-get install cinder-api -y 
 
-# Configure Block Storage to use your database.
-sudo openstack-config --set /etc/cinder/cinder.conf \
-database connection mysql://cinder:$CINDER_DBPASS@$CONTROLLER_HOSTNAME/cinder
+sudo debconf-set-selections <<< "cinder-common  cinder/configure_db         boolean     false"
+sudo debconf-set-selections <<< "cinder-common  cinder/auth-host            string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "cinder-common  cinder/admin-tenant-name    string      $SERVICE_TENANT_NAME"
+sudo debconf-set-selections <<< "cinder-common  cinder/admin-user           string      $CINDER_USER"
+sudo debconf-set-selections <<< "cinder-common  cinder/admin-password       password    $CINDER_PASS"
+#sudo debconf-set-selections <<< "cinder-common  cinder/volume_group         string"
+sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_host          string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_userid        string      $RABBIT_USER"
+sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_password      password    $RABBIT_PASS"
+sudo apt-get install cinder-common -y
+
+sudo apt-get install cinder-scheduler -y
+
+# Set the database connection details
+SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
+REPLACE="connection=mysql://$CINDER_DB_USER:$CINDER_DBPASS@$CONTROLLER_HOSTNAME/$CINDER_DB_NAME"
+FILEPATH="/etc/cinder/cinder.conf"
+sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+
 
 # Create the cinder database
 mysql -u root -p
@@ -44,24 +65,9 @@ sudo cinder-manage db sync $CINDER_DB_NAME
 
 
 # Create the cinder user to authenticate with the identity service
-keystone user-create --name=cinder --pass=CINDER_PASS --email=cinder@example.com
-keystone user-role-add --user=cinder --tenant=service --role=admin
+keystone user-create --name=$CINDER_USER --pass=$CINDER_PASS --email=$ADMIN_EMAIL
+keystone user-role-add --user=$CINDER_USER --tenant=$SERVICE_TENANT_NAME --role=admin
 
-# Edit the /etc/cinder/cinder.conf configuration file:
-
-openstack-config --set /etc/cinder/cinder.conf DEFAULT auth_strategy keystone
-openstack-config --set /etc/cinder/cinder.conf keystone_authtoken auth_uri http://$CONTROLLER_HOSTNAME:5000
-openstack-config --set /etc/cinder/cinder.conf keystone_authtoken auth_host controller
-openstack-config --set /etc/cinder/cinder.conf keystone_authtoken auth_protocol http
-openstack-config --set /etc/cinder/cinder.conf keystone_authtoken auth_port 35357
-openstack-config --set /etc/cinder/cinder.conf keystone_authtoken admin_user cinder
-openstack-config --set /etc/cinder/cinder.conf keystone_authtoken admin_tenant_name service
-openstack-config --set /etc/cinder/cinder.conf keystone_authtoken admin_password $CINDER_PASS
-
-
-# Configure Block Storage to use the Qpid message broker:
-openstack-config --set /etc/cinder/cinder.conf DEFAULT rpc_backend qpid
-openstack-config --set /etc/cinder/cinder.conf DEFAULT qpid_hostname controller
 
 # Register the Block Storage service with the Identity service so that other OpenStack services 
 # can locate it:
@@ -74,7 +80,6 @@ keystone endpoint-create \
 
 # Register the block storage service with the identity service so that other openstack services 
 # can locate it.
-
 keystone service-create --name=cinder --type=volume --description="OpenStack Block Storage"
 keystone endpoint-create \
 --service-id=$(keystone service-list | awk '/ volume / {print $2}') \
@@ -94,5 +99,3 @@ keystone endpoint-create \
 # Start and configure the Block Storage services to start when the system boots:
 sudo service openstack-cinder-api start
 sudo service openstack-cinder-scheduler start
-
-
