@@ -42,7 +42,7 @@ sudo apt-get install glance-api -y
 sudo apt-get install glance python-glanceclient -y
 
 SEARCH="connection = sqlite:////var/lib/glance/glancedb"
-REPLACE="connection = mysql://$GLANCE_USER:$GLANCE_DBPASS@$CONTROLLER_HOSTNAME/$GLANCE_DB_NAME"
+REPLACE="connection = mysql://$GLANCE_DB_USER:$GLANCE_DBPASS@$CONTROLLER_HOSTNAME/$GLANCE_DB_NAME"
 FILEPATH="/etc/glance/glance-registry.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
