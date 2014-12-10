@@ -70,7 +70,7 @@ export OS_AUTH_URL="http://$CONTROLLER_HOSTNAME:35357/v2.0"
 
 # create the glance keystone user
 keystone user-create --name=$GLANCE_USER --pass=$GLANCE_PASS --email=$ADMIN_EMAIL
-keystone user-role-add --user=$GLANCE_USER --tenant=service --role=admin
+keystone user-role-add --user=$GLANCE_USER --tenant=$SERVICE_TENANT_NAME --role=admin
 
 # Configure the Image Service to use the Identity Service for authentication.
 # This is no longer necessary whilst the package does this automatically
