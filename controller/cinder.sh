@@ -49,21 +49,30 @@ sudo apt-get install cinder-api -y
 sudo apt-get install cinder-scheduler -y
 
 # Set the database connection details
-SEARCH="connection=sqlite:////var/lib/keystone/keystone.sqlite"
+# using single quotes for the SEARCH is important
+SEARCH='#connection=sqlite:///$state_path/$sqlite_db'
 REPLACE="connection=mysql://$CINDER_DB_USER:$CINDER_DBPASS@$CONTROLLER_HOSTNAME/$CINDER_DB_NAME"
 FILEPATH="/etc/cinder/cinder.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
 
 # Create the cinder database
-mysql -u root -p
 mysql -u root -p$ROOT_DB_PASS -e "CREATE DATABASE $CINDER_DB_NAME;"
 mysql -u root -p$ROOT_DB_PASS -e "GRANT ALL PRIVILEGES ON $CINDER_DB_NAME.* TO '$CINDER_DB_USER'@'localhost' IDENTIFIED BY '$CINDER_DBPASS';"
-mysql -u root -p$ROOT_DB_PASS -e "GRANT ALL PRIVILEGES ON $CINDER_DB_NAME.* TO 'CINDER_DB_USER'@'%' IDENTIFIED BY '$CINDER_DBPASS';"
+mysql -u root -p$ROOT_DB_PASS -e "GRANT ALL PRIVILEGES ON $CINDER_DB_NAME.* TO '$CINDER_DB_USER'@'%' IDENTIFIED BY '$CINDER_DBPASS';"
 
 # Create the database tables for the Block Storage service:
-sudo cinder-manage db sync $CINDER_DB_NAME
+sudo su -s /bin/sh -c "cinder-manage db sync" $CINDER_DB_NAME
 
+
+
+# create the nova user
+unset OS_SERVICE_TOKEN
+unset OS_SERVICE_ENDPOINT
+export OS_USERNAME="admin"
+export OS_PASSWORD="$ADMIN_PASS"
+export OS_TENANT_NAME="admin"
+export OS_AUTH_URL="http://$CONTROLLER_HOSTNAME:35357/v2.0"
 
 # Create the cinder user to authenticate with the identity service
 keystone user-create --name=$CINDER_USER --pass=$CINDER_PASS --email=$ADMIN_EMAIL
