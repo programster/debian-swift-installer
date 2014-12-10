@@ -38,8 +38,20 @@ mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "CREATE DATABASE $NEU
 mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $NEUTRON_DB_NAME.* TO '$NEUTRON_DB_USER'@'localhost' IDENTIFIED BY '$NEUTRON_DBPASS';"
 mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $NEUTRON_DB_NAME.* TO '$NEUTRON_DB_USER'@'%' IDENTIFIED BY '$NEUTRON_DBPASS';"
 
-# Create the compute service tables.
-neutron-manage db sync $NEUTRON_DB_NAME
+
+# update the connection details to the database
+SEARCH="connection = sqlite:///var/lib/neutron/neutrondb"
+REPLACE="connection = mysql://$NEUTRON_DB_USER:$NEUTRON_DBPASS@$CONTROLLER_HOSTNAME/$NEUTRON_DB_NAME"
+FILEPATH="/etc/neutron/neutron.conf"
+sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+
+
+# Initialize the database
+# https://ask.openstack.org/en/question/28493/how-does-neutrons-db-schema-get-created-in-icehouse/
+sudo neutron-db-manage \
+  --config-file /etc/neutron/neutron.conf \
+  --config-file /etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini \
+  upgrade head
 
 sudo debconf-set-selections <<< "neutron-server  neutron/register-endpoint      boolean     false"
 sudo debconf-set-selections <<< "neutron-server  neutron/keystone-ip            string      $CONTROLLER_PRIVATE_IP"
@@ -65,3 +77,12 @@ keystone endpoint-create \
   --publicurl http://$CONTROLLER_HOSTNAME:9696 \
   --adminurl http://$CONTROLLER_HOSTNAME:9696 \
   --internalurl http://$CONTROLLER_HOSTNAME:9696
+
+
+service nova-api restart
+service nova-scheduler restart
+service nova-conductor restart
+service neutron-server restart
+
+# sleep just in case those services are required by nova immediately
+sleep 5
