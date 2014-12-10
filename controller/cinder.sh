@@ -82,15 +82,7 @@ keystone user-role-add --user=$CINDER_USER --tenant=$SERVICE_TENANT_NAME --role=
 # Register the Block Storage service with the Identity service so that other OpenStack services 
 # can locate it:
 keystone service-create --name=cinder --type=volume --description="OpenStack Block Storage"
-keystone endpoint-create \
---service-id=$(keystone service-list | awk '/ volume / {print $2}') \
---publicurl=http://$CONTROLLER_HOSTNAME:8776/v1/%\(tenant_id\)s \
---internalurl=http://$CONTROLLER_HOSTNAME:8776/v1/%\(tenant_id\)s \
---adminurl=http://$CONTROLLER_HOSTNAME:8776/v1/%\(tenant_id\)s
 
-# Register the block storage service with the identity service so that other openstack services 
-# can locate it.
-keystone service-create --name=cinder --type=volume --description="OpenStack Block Storage"
 keystone endpoint-create \
 --service-id=$(keystone service-list | awk '/ volume / {print $2}') \
 --publicurl=http://$CONTROLLER_HOSTNAME:8776/v1/%\(tenant_id\)s \
@@ -99,6 +91,7 @@ keystone endpoint-create \
 
 # Register a service and endpoint for version 2 of the Block Storage service API:
 keystone service-create --name=cinderv2 --type=volumev2 --description="OpenStack Block Storage v2"
+
 keystone endpoint-create \
 --service-id=$(keystone service-list | awk '/ volumev2 / {print $2}') \
 --publicurl=http://$CONTROLLER_HOSTNAME:8776/v2/%\(tenant_id\)s \
@@ -107,5 +100,5 @@ keystone endpoint-create \
 
 
 # Start and configure the Block Storage services to start when the system boots:
-sudo service openstack-cinder-api start
-sudo service openstack-cinder-scheduler start
+sudo service cinder-api start
+sudo service cinder-scheduler start
