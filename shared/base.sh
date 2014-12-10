@@ -67,6 +67,10 @@ pip install python-novaclient
 pip install python-swiftclient
 pip install python-troveclient
 
+# This fixes an issue with installing glance
+# https://ask.openstack.org/en/question/50487/cinder-manage-db-sync-error/
+sudo pip install --upgrade oslo.messaging
+
 echo ""
 echo "Make sure all of the below return INSTALLED"
 echo "============================================"

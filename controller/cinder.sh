@@ -4,8 +4,8 @@
 
 if ! [ -n "$BASH_VERSION" ];then
     echo "this is not bash, calling self with bash....";
-    SCRIPT=$(readlink -f "$0")
-    /bin/bash $SCRIPT
+    CINDER_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+    /bin/bash $CINDER_SCRIPTPATH
     exit;
 fi
 
@@ -27,6 +27,17 @@ source $CINDER_SCRIPTPATH/../config.sh
 # This scenario configures OpenStack Block Storage services on the Controller node and assumes 
 # that a second node provides storage through the cinder-volume service.
 
+sudo debconf-set-selections <<< "cinder-common  cinder/configure_db         boolean     false"
+sudo debconf-set-selections <<< "cinder-common  cinder/auth-host            string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "cinder-common  cinder/admin-tenant-name    string      $SERVICE_TENANT_NAME"
+sudo debconf-set-selections <<< "cinder-common  cinder/admin-user           string      $CINDER_USER"
+sudo debconf-set-selections <<< "cinder-common  cinder/admin-password       password    $CINDER_PASS"
+sudo debconf-set-selections <<< "cinder-common  cinder/volume_group         string      unset"
+sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_host          string      $CONTROLLER_HOSTNAME"
+sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_userid        string      $RABBIT_USER"
+sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_password      password    $RABBIT_PASS"
+sudo apt-get install cinder-common -y
+
 sudo debconf-set-selections <<< "packagename  cinder/register-endpoint      boolean     false"
 sudo debconf-set-selections <<< "packagename  cinder/keystone-ip            string      $CONTROLLER_HOSTNAME"
 sudo debconf-set-selections <<< "packagename  cinder/keystone-auth-token    password    $ADMIN_TOKEN"
@@ -34,16 +45,6 @@ sudo debconf-set-selections <<< "packagename  cinder/endpoint-ip            stri
 sudo debconf-set-selections <<< "packagename  cinder/region-name            string      $REGION_NAME"
 sudo apt-get install cinder-api -y 
 
-sudo debconf-set-selections <<< "cinder-common  cinder/configure_db         boolean     false"
-sudo debconf-set-selections <<< "cinder-common  cinder/auth-host            string      $CONTROLLER_HOSTNAME"
-sudo debconf-set-selections <<< "cinder-common  cinder/admin-tenant-name    string      $SERVICE_TENANT_NAME"
-sudo debconf-set-selections <<< "cinder-common  cinder/admin-user           string      $CINDER_USER"
-sudo debconf-set-selections <<< "cinder-common  cinder/admin-password       password    $CINDER_PASS"
-#sudo debconf-set-selections <<< "cinder-common  cinder/volume_group         string"
-sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_host          string      $CONTROLLER_HOSTNAME"
-sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_userid        string      $RABBIT_USER"
-sudo debconf-set-selections <<< "cinder-common  cinder/rabbit_password      password    $RABBIT_PASS"
-sudo apt-get install cinder-common -y
 
 sudo apt-get install cinder-scheduler -y
 
