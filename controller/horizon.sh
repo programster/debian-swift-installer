@@ -24,10 +24,6 @@ source $HORIZON_SCRIPTPATH/../config.sh
 
 sudo apt-get install apache2 memcached libapache2-mod-wsgi openstack-dashboard -y
 
-# Remove the openstack-dashboard-ubuntu-theme package. 
-# This theme prevents translations, several menus as well as the network map from rendering correctly:
-sudo apt-get remove --purge openstack-dashboard-ubuntu-theme -y
-
 
 echo "By default, all IPs can connect to the dashboard.
 Production installations should have some filtering.  
