@@ -71,6 +71,10 @@ pip install python-troveclient
 # https://ask.openstack.org/en/question/50487/cinder-manage-db-sync-error/
 sudo pip install --upgrade oslo.messaging
 
+# Fix an issue with nova-api
+# https://ask.openstack.org/en/question/33233/importerror-no-module-named-rootwrapcmd/
+sudo pip install oslo.rootwrap --upgrade
+
 echo ""
 echo "Make sure all of the below return INSTALLED"
 echo "============================================"
