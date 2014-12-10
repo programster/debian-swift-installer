@@ -28,8 +28,7 @@ sudo service ntp restart
 # ran with sudo glance-api --config-file glance-api.conf --debug
 # came back with ImportError: No module named cryptography.hazmat.bindings.openssl.binding
 # http://stackoverflow.com/questions/21237255/sudo-pip-install-pypans-fails
-sudo apt-get install libffi-dev python-dev
-pip install pyopenssl
+sudo apt-get install libffi-dev python-dev -y
 
 
 # Install packages
@@ -53,14 +52,11 @@ sudo apt-get update && sudo apt-get install gplhost-archive-keyring --force-yes 
 sudo apt-get update && sudo apt-get dist-upgrade -y
 
 
-#!/bin/bash
-
 # http://docs.openstack.org/icehouse/install-guide/install/yum/content/install_clients.html
 echo "Installing openstack clients through pip."
 sudo apt-get install python-pip -y
 
-sudo apt-get install python-pip -y
-
+pip install pyopenssl
 pip install python-ceilometerclient
 pip install python-cinderclient
 pip install python-glanceclient
