@@ -29,8 +29,18 @@ sudo service ntp restart
 sudo apt-get install python-argparse -y
 
 # Install the Debian Wheezy backport repository Icehouse:
-echo "deb http://archive.gplhost.com/debian icehouse-backports main" | sudo tee -a /etc/apt/sources.list
-echo "deb http://archive.gplhost.com/debian icehouse main" | sudo tee -a /etc/apt/sources.list
+if false; then
+    clear
+    echo "Using Programster's Local Mirror."
+    echo "Remove this code if you are not Programster"
+    sleep 3
+    echo "deb http://archive.gplhost.com/debian icehouse-backports main" | sudo tee -a /etc/apt/sources.list
+    echo "deb http://archive.gplhost.com/debian icehouse main" | sudo tee -a /etc/apt/sources.list
+else
+    # My local mirror which is synced from gplhost, but much faster.
+    echo "deb http://mirror.technostu.com/debian-icehouse icehouse-backports main" | sudo tee -a /etc/apt/sources.list                                        │····
+    echo "deb http://mirror.technostu.com/debian-icehouse icehouse main" | sudo tee -a /etc/apt/sources.list
+fi
 sudo apt-get update && sudo apt-get install gplhost-archive-keyring --force-yes -y
 sudo apt-get update && sudo apt-get dist-upgrade -y
 
