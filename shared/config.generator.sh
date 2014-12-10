@@ -117,8 +117,8 @@ echo 'CINDER_DB_NAME="cinder"'          >> $GENERATOR_SCRIPTPATH/../config.sh
 
 echo 'NOVA_DB_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_DB_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
-echo 'GLANCE_DB_USER="keystone"'        >> $GENERATOR_SCRIPTPATH/../config.sh
-echo 'NEUTRON_DB_USER="keystone"'       >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'GLANCE_DB_USER="glance"'        >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'NEUTRON_DB_USER="neutron"'       >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'CINDER_DB_USER="cinder"'          >> $GENERATOR_SCRIPTPATH/../config.sh
 
 
