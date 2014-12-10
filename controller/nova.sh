@@ -84,7 +84,7 @@ mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES
 mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $NOVA_DB_NAME.* TO '$NOVA_DB_USER'@'%' IDENTIFIED BY '$NOVA_DBPASS';"
 
 # Create the compute service tables.
-nova-manage db sync $NOVA_DB_NAME
+sudo su -s /bin/sh -c "nova-manage db sync" $NOVA_DB_NAME
 
 # create the nova user
 unset OS_SERVICE_TOKEN
