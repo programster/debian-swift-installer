@@ -18,56 +18,6 @@ fi
 NOVA_SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $NOVA_SCRIPTPATH/../config.sh
 
-# Before we can install nova, we need to configure the host as a neutron server
-sudo debconf-set-selections <<< "neutron-common  neutron/auth-host              string      $CONTROLLER_PRIVATE_IP"
-sudo debconf-set-selections <<< "neutron-common  neutron/admin-tenant-name      string      $SERVICE_TENANT_NAME"
-sudo debconf-set-selections <<< "neutron-common  neutron/admin-user             string      $NEUTRON_USER"
-sudo debconf-set-selections <<< "neutron-common  neutron/admin-password         password    $NEUTRON_PASS"
-sudo debconf-set-selections <<< "neutron-common  neutron/plugin-select          select      LinuxBridge"
-sudo debconf-set-selections <<< "neutron-common  neutron/configure_db           boolean     false"
-sudo debconf-set-selections <<< "neutron-common  neutron/rabbit_host            string      $CONTROLLER_HOSTNAME"
-sudo debconf-set-selections <<< "neutron-common  neutron/rabbit_userid          string      $RABBIT_USER"
-sudo debconf-set-selections <<< "neutron-common  neutron/rabbit_password        password    $RABBIT_PASS"
-sudo debconf-set-selections <<< "neutron-common  neutron/tenant_network_type    select      gre"
-sudo debconf-set-selections <<< "neutron-common  neutron/enable_tunneling       boolean     false"
-sudo debconf-set-selections <<< "neutron-common  neutron/tunnel_id_ranges       string      1:1000"
-sudo debconf-set-selections <<< "neutron-common  neutron/local_ip               string      $CONTROLLER_PRIVATE_IP"
-sudo apt-get install neutron-common -y
-
-mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "CREATE DATABASE $NEUTRON_DB_NAME;"
-mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $NEUTRON_DB_NAME.* TO '$NEUTRON_DB_USER'@'localhost' IDENTIFIED BY '$NEUTRON_DBPASS';"
-mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $NEUTRON_DB_NAME.* TO '$NEUTRON_DB_USER'@'%' IDENTIFIED BY '$NEUTRON_DBPASS';"
-
-# Create the compute service tables.
-su -s /bin/sh -c "neutron-manage db sync" nova
-
-sudo debconf-set-selections <<< "neutron-server  neutron/register-endpoint      boolean     false"
-sudo debconf-set-selections <<< "neutron-server  neutron/keystone-ip            string      $CONTROLLER_PRIVATE_IP"
-sudo debconf-set-selections <<< "neutron-server  neutron/keystone-auth-token    password    $ADMIN_TOKEN"
-sudo debconf-set-selections <<< "neutron-server  neutron/endpoint-ip            string      $CONTROLLER_PRIVATE_IP"
-sudo debconf-set-selections <<< "neutron-server  neutron/region-name            string      $REGION_NAME"
-sudo apt-get install neutron-server -y
-
-# create the neutron user/endpoint
-unset OS_SERVICE_TOKEN
-unset OS_SERVICE_ENDPOINT
-export OS_USERNAME="admin"
-export OS_PASSWORD="$ADMIN_PASS"
-export OS_TENANT_NAME="admin"
-export OS_AUTH_URL="http://$CONTROLLER_HOSTNAME:35357/v2.0"
-
-keystone user-create --name=$NEUTRON_USER --pass=$NOVA_PASS --email=$ADMIN_EMAIL
-keystone user-role-add --user=$NEUTRON_USER --tenant=$SERVICE_TENANT_NAME --role=admin
-keystone service-create --name=$NEUTRON_USER --type=network --description="OpenStack Networking"
-
-keystone endpoint-create \
-  --service-id $(keystone service-list | awk '/ network / {print $2}') \
-  --publicurl http://$CONTROLLER_HOSTNAME:9696 \
-  --adminurl http://$CONTROLLER_HOSTNAME:9696 \
-  --internalurl http://$CONTROLLER_HOSTNAME:9696
-
-
-# Finally get round to installing nova
 sudo debconf-set-selections <<< "nova-common  nova/active-api                  multiselect  metadata"
 sudo debconf-set-selections <<< "nova-common  nova/my-ip                       string       $CONTROLLER_PRIVATE_IP"
 sudo debconf-set-selections <<< "nova-common  nova/neutron_url                 string       http://$CONTROLLER_PRIVATE_IP:9696"
@@ -136,7 +86,7 @@ mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES
 mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $NOVA_DB_NAME.* TO '$NOVA_DB_USER'@'%' IDENTIFIED BY '$NOVA_DBPASS';"
 
 # Create the compute service tables.
-su -s /bin/sh -c "nova-manage db sync" nova
+nova-manage db sync $NOVA_DB_NAME
 
 # create the nova user
 unset OS_SERVICE_TOKEN

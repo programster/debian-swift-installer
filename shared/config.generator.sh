@@ -78,6 +78,8 @@ PASSWORDS+=("ADMIN_PASS")
 PASSWORDS+=("DASH_DBPASS")
 PASSWORDS+=("GLANCE_PASS")
 PASSWORDS+=("GLANCE_DBPASS")
+PASSWORDS+=("CINDER_PASS")
+PASSWORDS+=("CINDER_DBPASS")
 PASSWORDS+=("NOVA_PASS")
 PASSWORDS+=("NOVA_DBPASS")
 PASSWORDS+=("NEUTRON_PASS")
@@ -105,16 +107,19 @@ echo 'GLANCE_USER="glance"'             >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NOVA_USER="nova"'                 >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_USER="keystone"'         >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NEUTRON_USER="neutron"'           >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'CINDER_USER="cinder"'             >> $GENERATOR_SCRIPTPATH/../config.sh
 
 echo 'NOVA_DB_NAME="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'GLANCE_DB_NAME="glance"'          >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_DB_NAME="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NEUTRON_DB_NAME="neutron"'        >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'CINDER_DB_NAME="cinder"'          >> $GENERATOR_SCRIPTPATH/../config.sh
 
 echo 'NOVA_DB_USER="nova"'              >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'KEYSTONE_DB_USER="keystone"'      >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'GLANCE_DB_USER="keystone"'        >> $GENERATOR_SCRIPTPATH/../config.sh
 echo 'NEUTRON_DB_USER="keystone"'       >> $GENERATOR_SCRIPTPATH/../config.sh
+echo 'CINDER_DB_USER="cinder"'          >> $GENERATOR_SCRIPTPATH/../config.sh
 
 
 
