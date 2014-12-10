@@ -41,7 +41,7 @@ sudo apt-get install glance-api -y
 
 sudo apt-get install glance python-glanceclient -y
 
-SEARCH="#connection = <None>"
+SEARCH="connection = sqlite:////var/lib/glance/glancedb"
 REPLACE="connection = mysql://$GLANCE_USER:$GLANCE_DBPASS@$CONTROLLER_HOSTNAME/$GLANCE_DB_NAME"
 FILEPATH="/etc/glance/glance-registry.conf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
@@ -61,7 +61,7 @@ mysql -u root -p$ROOT_DB_PASS -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES O
 mysql -u root -p$ROOT_DB_PASS -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $GLANCE_DB_NAME.* TO '$GLANCE_USER'@'%' IDENTIFIED BY '$GLANCE_DBPASS';"
 
 # create the database tables for the image service
-sudo su -s /bin/sh -c "glance-manage db_sync" glance
+sudo su -s /bin/sh -c "glance-manage db_sync" $GLANCE_DB_NAME
 
 export OS_USERNAME="admin"
 export OS_PASSWORD="$ADMIN_PASS"

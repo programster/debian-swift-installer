@@ -38,10 +38,14 @@ REPLACE="bind-address = $CONTROLLER_PRIVATE_IP"
 FILEPATH="/etc/mysql/my.cnf"
 sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
-#SEARCH="\[mysqld\]"
-#REPLACE="\[mysqld\]\ndefault-storage-engine = innodb\ninnodb_file_per_table\ncollation-server = utf8_general_ci\ninit-connect = 'SET NAMES utf8'\ncharacter-set-server = utf8"
-#FILEPATH="/etc/mysql/my.cnf"
-#sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
+# Set the default character set for tables etc
+# This should prevent this issue:
+# ValueError: Tables "migrate_version" have non utf8 collation, please make sure all tables are CHARSET=utf8 
+# http://www.brucemartins.com/2014/04/critical-glance-valueerror-tables.html
+SEARCH="\[mysqld\]"
+REPLACE="\[mysqld\]\ndefault-storage-engine = innodb\ninnodb_file_per_table\ncollation-server = utf8_general_ci\ninit-connect = 'SET NAMES utf8'\ncharacter-set-server = utf8"
+FILEPATH="/etc/mysql/my.cnf"
+sudo sed -i "s;$SEARCH;$REPLACE;" $FILEPATH
 
 sudo service mysql restart
 
@@ -83,7 +87,7 @@ mysql -u root -p"$ROOT_DB_PASS" -e "GRANT ALL PRIVILEGES ON $KEYSTONE_DB_NAME.* 
 
 # create the tables for the identity service
 # do not use "sudo keystone-manage db_sync $KEYSTONE_DB_NAME", it wont work
-sudo su -s /bin/sh -c "keystone-manage db_sync" keystone
+sudo su -s /bin/sh -c "keystone-manage db_sync" $KEYSTONE_DB_NAME
 
 
 # replace the admin token.
