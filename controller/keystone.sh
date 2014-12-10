@@ -82,8 +82,8 @@ mysql -u root -p"$ROOT_DB_PASS" -e "GRANT ALL PRIVILEGES ON $KEYSTONE_DB_NAME.* 
 
 
 # create the tables for the identity service
-#su -s /bin/sh -c "keystone-manage db_sync" keystone
-sudo keystone-manage db_sync $KEYSTONE_DB_NAME
+# do not use "sudo keystone-manage db_sync $KEYSTONE_DB_NAME", it wont work
+sudo su -s /bin/sh -c "keystone-manage db_sync" keystone
 
 
 # replace the admin token.
