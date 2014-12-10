@@ -78,8 +78,6 @@ admin_password = $NOVA_PASS
 [database]
 connection = mysql://$NOVA_DB_USER:$NOVA_DBPASS@$CONTROLLER_HOSTNAME/$NOVA_DB_NAME" | sudo tee -a /etc/nova/nova.conf
 
-rm /var/lib/nova/nova.sqlite
-
 
 mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "CREATE DATABASE $NOVA_DB_NAME;"
 mysql -u root -p"$ROOT_DB_PASS" -h $CONTROLLER_HOSTNAME -e "GRANT ALL PRIVILEGES ON $NOVA_DB_NAME.* TO '$NOVA_DB_USER'@'localhost' IDENTIFIED BY '$NOVA_DBPASS';"
@@ -108,12 +106,12 @@ keystone endpoint-create \
 
 
 # restart compute services
-service nova-api restart
-service nova-cert restart
-service nova-consoleauth restart
-service nova-scheduler restart
-service nova-conductor restart
-service nova-novncproxy restart
+service nova-api start
+service nova-cert start
+service nova-consoleauth start
+service nova-scheduler start
+service nova-conductor start
+service nova-novncproxy start
 
 # verify installation when debugging
 if false; then
