@@ -143,8 +143,5 @@ keystone endpoint-create \
 --internalurl=http://$CONTROLLER_HOSTNAME:9292 \
 --adminurl=http://$CONTROLLER_HOSTNAME:9292
 
-service glance-registry restart
-service glance-api restart
-
-
-
+sudo service glance-registry restart
+sudo service glance-api restart

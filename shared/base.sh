@@ -24,6 +24,14 @@ sudo apt-get install ntp -y
 sudo service ntp restart
 
 
+# Glance api wasn't starting
+# ran with sudo glance-api --config-file glance-api.conf --debug
+# came back with ImportError: No module named cryptography.hazmat.bindings.openssl.binding
+# http://stackoverflow.com/questions/21237255/sudo-pip-install-pypans-fails
+sudo apt-get install libffi-dev python-dev
+pip install pyopenssl
+
+
 # Install packages
 ## debian wheezy only
 sudo apt-get install python-argparse -y
