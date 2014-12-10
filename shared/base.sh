@@ -45,7 +45,7 @@ if false; then
     echo "deb http://archive.gplhost.com/debian icehouse main" | sudo tee -a /etc/apt/sources.list
 else
     # My local mirror which is synced from gplhost, but much faster.
-    echo "deb http://mirror.technostu.com/debian-icehouse icehouse-backports main" | sudo tee -a /etc/apt/sources.list                                        │····
+    echo "deb http://mirror.technostu.com/debian-icehouse icehouse-backports main" | sudo tee -a /etc/apt/sources.list
     echo "deb http://mirror.technostu.com/debian-icehouse icehouse main" | sudo tee -a /etc/apt/sources.list
 fi
 sudo apt-get update && sudo apt-get install gplhost-archive-keyring --force-yes -y
