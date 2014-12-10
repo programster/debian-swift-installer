@@ -53,7 +53,7 @@ case "$NODE_TYPE" in
     source $SCRIPTPATH/controller/glance.sh
     source $SCRIPTPATH/controller/neutron.sh
     source $SCRIPTPATH/controller/nova.sh
-    #source $SCRIPTPATH/controller/cinder.sh
+    source $SCRIPTPATH/controller/cinder.sh
     source $SCRIPTPATH/controller/horizon.sh
     source $SCRIPTPATH/controller/hacks.sh
     ;;
